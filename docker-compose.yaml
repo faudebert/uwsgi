@@ -1,0 +1,31 @@
+services:
+  uwsgi:
+    image: uwsgi:2.0.18
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8000:8000
+    command:
+      - --http-socket=:8000
+      - --need-app
+      - --master
+      - --workers=2
+      - --threads=2
+      - --max-requests=500
+      - --worker-reload-mercy=3600
+      - --vacuum
+      - --listen=4096
+      - --buffer-size=65535
+      - --plugin=python3,logfile
+      - --memory-report
+      - --reload-on-rss=512
+      - --lazy-apps
+      - --disable-logging
+      - --logger=file:/usr/src/app/default.log
+      - --logger=json stdio
+      - --log-route=json ^\{.*\}$
+      - --chdir=/usr/src/app
+      - --module=wsgi:application
+      - --die-on-term
